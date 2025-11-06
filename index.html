@@ -168,6 +168,23 @@ footer{
 .dragging{
   opacity:0.5;
 }
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .channel-header button.delete-channel {
+    color: #ff0000 !important;
+    font-weight: bold;
+  }
+  
+  .channel li {
+    cursor: default;
+  }
+  
+  .task-buttons {
+    z-index: 10;
+    position: relative;
+  }
+}
 </style>
 </head>
 <body>
@@ -191,12 +208,24 @@ function saveData(){
   localStorage.setItem("tasksDataV2", JSON.stringify(stored));
 }
 
+/* ---------------- Check if Mobile ---------------- */
+const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 /* ---------------- Rendering ---------------- */
 function htmlSafeId(str){return str.replace(/[^a-z0-9_-]/gi,'_');}
 
 function render(){
   const container = document.getElementById("channelsContainer");
   container.innerHTML = "";
+  
+  // Create default channel for mobile if it doesn't exist
+  if (isMobile && !stored.channels["المهام"]) {
+    stored.channels["المهام"] = [];
+    if (!stored.order.includes("المهام")) {
+      stored.order.unshift("المهام");
+    }
+  }
+  
   stored.order.forEach(ch=>{
     const ulId = `ul-${htmlSafeId(ch)}`;
     const channelDiv = document.createElement("div");
@@ -218,12 +247,17 @@ function render(){
     const ul = document.getElementById(ulId);
     stored.channels[ch].forEach(task=>{
       const li = document.createElement("li");
-      li.draggable = true;
-      li.ondragstart = (ev)=>onDrag(ev, ch, task.text);
+      
+      // Only enable drag on desktop
+      if (!isMobile) {
+        li.draggable = true;
+        li.ondragstart = (ev)=>onDrag(ev, ch, task.text);
+      }
+      
       li.innerHTML = `
         <span class="task-text">${task.text}</span>
         <div class="task-buttons">
-          <button onclick="toggleCheck('${ch}', '${task.text}')">${task.checked?'☑':'☐'}</button>
+          <button class="check-btn" onclick="toggleCheck('${ch}', '${task.text}')">${task.checked?'☑':'☐'}</button>
           <button onclick="editTaskPrompt('${ch}', '${task.text}')">✎</button>
           <button onclick="deleteTask('${ch}', '${task.text}')">✖</button>
         </div>
@@ -232,7 +266,15 @@ function render(){
       ul.appendChild(li);
     });
   });
+  
+  // Make delete buttons red on mobile
+  if (isMobile) {
+    document.querySelectorAll('.delete-channel').forEach(btn => {
+      btn.style.color = '#ff0000';
+    });
+  }
 }
+
 /* ---------------- Channels & Tasks Logic ---------------- */
 function addChannel(){
   const input=document.getElementById("newChannelInput");
@@ -249,6 +291,18 @@ document.getElementById("addChannelBtn").onclick=addChannel;
 function addTask(channel,input){
   const text=input.value.trim();
   if(!text)return;
+  
+  // On mobile, if no channel is specified, add to default channel
+  if (isMobile && !channel) {
+    channel = "المهام";
+    if (!stored.channels[channel]) {
+      stored.channels[channel] = [];
+      if (!stored.order.includes(channel)) {
+        stored.order.unshift(channel);
+      }
+    }
+  }
+  
   stored.channels[channel].push({text,checked:false});
   saveData();render();
   input.value="";
@@ -282,7 +336,7 @@ function editTaskPrompt(channel,text){
   saveData();render();
 }
 
-/* ---------------- Drag & Drop (Desktop) ---------------- */
+/* ---------------- Drag & Drop (Desktop Only) ---------------- */
 function onDrag(ev,from,text){
   ev.dataTransfer.setData("text/plain",JSON.stringify({from,text}));
 }
@@ -309,41 +363,81 @@ document.addEventListener("click",e=>{
 
 /* ---------------- Touch Drag & Drop (Mobile Only) ---------------- */
 (function enableTouchDrag(){
-  const isMobile=/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  if(!isMobile)return;
+  if(!isMobile) return;
 
   let dragTask=null,dragEl=null;
+  let isDragging = false;
+  let touchStartTime = 0;
+  let touchStartX = 0;
+  let touchStartY = 0;
 
   document.addEventListener("touchstart",e=>{
-    const li=e.target.closest("li"); if(!li)return;
-    const ul=li.closest("ul"); if(!ul)return;
+    const li=e.target.closest("li"); 
+    if(!li) return;
+    
+    // Check if the touch is on a button
+    if (e.target.closest('.task-buttons')) {
+      return; // Don't start drag if touching buttons
+    }
+    
+    const ul=li.closest("ul"); 
+    if(!ul) return;
     const channel=Object.keys(stored.channels).find(k=>`ul-${htmlSafeId(k)}`===ul.id);
-    if(!channel)return;
-    const text=li.querySelector(".task-text").textContent;
-    dragTask={text,from:channel};
-    dragEl=li.cloneNode(true);
-    dragEl.style.position="fixed";
-    dragEl.style.pointerEvents="none";
-    dragEl.style.opacity="0.9";
-    dragEl.style.zIndex="9999";
-    dragEl.style.transform="scale(1.05)";
-    dragEl.style.boxShadow="0 8px 25px rgba(0,0,0,0.5)";
-    document.body.appendChild(dragEl);
-    const t=e.touches[0];
-    dragEl.style.left=t.clientX+"px";
-    dragEl.style.top=t.clientY+"px";
+    if(!channel) return;
+    
+    touchStartTime = Date.now();
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    
+    // Set a timeout to start dragging after a delay
+    dragTask = setTimeout(() => {
+      const text=li.querySelector(".task-text").textContent;
+      dragTask={text,from:channel};
+      dragEl=li.cloneNode(true);
+      dragEl.style.position="fixed";
+      dragEl.style.pointerEvents="none";
+      dragEl.style.opacity="0.9";
+      dragEl.style.zIndex="9999";
+      dragEl.style.transform="scale(1.05)";
+      dragEl.style.boxShadow="0 8px 25px rgba(0,0,0,0.5)";
+      document.body.appendChild(dragEl);
+      const t=e.touches[0];
+      dragEl.style.left=t.clientX+"px";
+      dragEl.style.top=t.clientY+"px";
+      isDragging = true;
+    }, 300); // 300ms delay before starting drag
   });
 
   document.addEventListener("touchmove",e=>{
-    if(!dragEl)return;
-    const t=e.touches[0];
-    dragEl.style.left=(t.clientX-60)+"px";
-    dragEl.style.top=(t.clientY-20)+"px";
+    if(!isDragging) return;
+    
+    // Cancel the drag if it's a small movement (likely a tap)
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartX);
+    const deltaY = Math.abs(touch.clientY - touchStartY);
+    
+    if (deltaX < 10 && deltaY < 10) return;
+    
+    if(dragEl){
+      const t=e.touches[0];
+      dragEl.style.left=(t.clientX-60)+"px";
+      dragEl.style.top=(t.clientY-20)+"px";
+    }
     e.preventDefault();
   },{passive:false});
 
   document.addEventListener("touchend",e=>{
-    if(!dragEl||!dragTask)return;
+    // Clear the drag timeout if it hasn't fired yet
+    if (dragTask && typeof dragTask === 'number') {
+      clearTimeout(dragTask);
+    }
+    
+    if(!isDragging || !dragEl || !dragTask || typeof dragTask === 'number') {
+      dragTask = null;
+      isDragging = false;
+      return;
+    }
+    
     const t=e.changedTouches[0];
     const elem=document.elementFromPoint(t.clientX,t.clientY);
     const dropChannelEl=elem?elem.closest(".channel"):null;
@@ -362,6 +456,7 @@ document.addEventListener("click",e=>{
     dragEl.remove();
     dragEl=null;
     dragTask=null;
+    isDragging = false;
   });
 })();
 
