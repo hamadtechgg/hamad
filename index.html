@@ -76,11 +76,11 @@ html,body{
   backdrop-filter: blur(10px);
 }
 
-/* Title — made a bit larger per request */
+/* Title */
 h1{
   margin:0 0 18px;
   text-align:center;
-  font-size:3rem; /* increased */
+  font-size:3rem;
   line-height:1;
   font-weight:700;
   color:var(--text);
@@ -111,41 +111,34 @@ button{
 button:active{ transform: translateY(1px) scale(.995); }
 button:hover{ transform: translateY(-2px) scale(1.02); }
 
-/* specific buttons */
 button.add-btn{ background: linear-gradient(45deg,var(--accent-a),var(--accent-b)); color:#002; }
 button.add-channel-btn{ background: linear-gradient(45deg,#2e7d32,#43a047); color:#fff; }
 button.delete-btn{ background: linear-gradient(45deg,#ff4d4d,#ff1a1a); color:#fff; }
 
-/* Channels row:
-   Important: use wrapping and vertical scroll instead of horizontal overflow.
-   This ensures when 4th channel is added it wraps to next row.
-*/
+/* Channels row */
 .channels-row{
   display:flex;
-  flex-wrap:wrap; /* allow wrapping to new row */
+  flex-wrap:wrap;
   gap:20px;
   align-items:flex-start;
-  /* remove horizontal scrollbar; use vertical scroll for long column height */
   overflow-x:hidden;
   max-height: calc(75vh);
   overflow-y:auto;
   padding:10px;
 }
 
-/* channel card sizing — approx 3-per-row layout on wide screens */
+/* channel card */
 .channel{
   background: var(--glass);
   border-radius:14px;
   padding:18px;
   min-width:260px;
-  flex: 1 1 calc(33.333% - 20px); /* try to fit 3 per row */
+  flex: 1 1 calc(33.333% - 20px);
   box-sizing:border-box;
   transition: transform .28s ease, box-shadow .28s ease;
   box-shadow: 0 12px 40px rgba(0,0,0,0.45);
   position:relative;
 }
-
-/* smaller screens: allow 2 per row or full width */
 @media (max-width:980px){
   .channel{ flex:1 1 calc(50% - 18px); min-width:220px;}
 }
@@ -153,14 +146,8 @@ button.delete-btn{ background: linear-gradient(45deg,#ff4d4d,#ff1a1a); color:#ff
   .channel{ flex:1 1 100%; min-width:100%; }
 }
 
-/* hovered channel */
 .channel.hovered{ outline:3px dashed rgba(0,229,255,0.35); }
-
-/* completed channel styles */
-.channel.completed{
-  background: rgba(0,255,102,0.08);
-  box-shadow: 0 16px 48px rgba(0,255,100,0.06);
-}
+.channel.completed{ background: rgba(0,255,102,0.08); box-shadow: 0 16px 48px rgba(0,255,100,0.06); }
 
 /* channel header */
 .channel-header{
@@ -170,7 +157,6 @@ button.delete-btn{ background: linear-gradient(45deg,#ff4d4d,#ff1a1a); color:#ff
   margin-bottom:12px;
   gap:8px;
 }
-
 .channel-title{
   display:flex;
   align-items:center;
@@ -180,7 +166,7 @@ button.delete-btn{ background: linear-gradient(45deg,#ff4d4d,#ff1a1a); color:#ff
   font-size:1.1rem;
 }
 
-/* THE SIMPLE WHITE PENCIL ICON (text emoji kept for simplicity) */
+/* pencil icon (white minimalist) */
 .edit-icon{
   cursor:pointer;
   display:inline-flex;
@@ -190,18 +176,14 @@ button.delete-btn{ background: linear-gradient(45deg,#ff4d4d,#ff1a1a); color:#ff
   height:26px;
   border-radius:6px;
   color:#fff;
-  transition: transform .22s ease, background .22s ease, opacity .22s ease;
   background:transparent;
   font-size:16px;
   line-height:1;
+  transition: transform .22s ease, background .22s ease, opacity .22s ease;
 }
-.edit-icon:hover{
-  transform: rotate(45deg);
-  background: rgba(255,255,255,0.06);
-  opacity:1;
-}
+.edit-icon:hover{ transform: rotate(45deg); background: rgba(255,255,255,0.06); }
 
-/* delete icon */
+/* red X icon */
 .delete-icon{
   cursor:pointer;
   color:var(--danger);
@@ -211,21 +193,8 @@ button.delete-btn{ background: linear-gradient(45deg,#ff4d4d,#ff1a1a); color:#ff
 .delete-icon:hover{ transform:scale(1.12); color:#ff1a1a; }
 
 /* progress bar */
-.progress-bar{
-  width:100%;
-  height:10px;
-  background: rgba(255,255,255,0.12);
-  border-radius:6px;
-  overflow:hidden;
-  margin-bottom:14px;
-}
-.progress-fill{
-  height:100%;
-  width:0%;
-  border-radius:6px;
-  background:linear-gradient(90deg,var(--accent-a),var(--accent-b));
-  transition: width .36s ease;
-}
+.progress-bar{ width:100%; height:10px; background: rgba(255,255,255,0.12); border-radius:6px; overflow:hidden; margin-bottom:14px; }
+.progress-fill{ height:100%; width:0%; border-radius:6px; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); transition: width .36s ease; }
 
 /* tasks list */
 ul{ list-style:none; margin:0; padding:0; min-height:60px; }
@@ -245,464 +214,183 @@ li:hover{ transform: translateY(-3px) scale(1.01); box-shadow: 0 8px 22px rgba(0
 
 /* task content */
 .task-content{ display:flex; align-items:center; gap:10px; flex:1; }
-.task-check{
-  width:20px;height:20px;border-radius:4px;border:2px solid var(--accent-a);cursor:pointer;position:relative;flex:0 0 20px;
-}
+.task-check{ width:20px;height:20px;border-radius:4px;border:2px solid var(--accent-a);cursor:pointer;position:relative;flex:0 0 20px; }
 .task-check.checked{ background:var(--accent-a); border-color:transparent; }
 .task-check.checked::after{ content:"✔"; position:absolute; color:#fff; font-size:12px; left:3px; top:-3px;}
-
-/* task text */
 .task-text{ flex:1; margin-inline-start:8px; }
-
-/* delete task */
 .delete-task{ color:var(--danger); font-weight:800; font-size:1.2rem; cursor:pointer; margin-inline-start:8px; }
 .delete-task:hover{ transform:scale(1.2); color:#ff1a1a; }
 
-/* floating task preview — moved to top-right per your request */
-#floatingTask{
-  position:fixed;
-  top:90px; /* below top bar */
-  right:20px;
-  z-index:1200;
-  background: rgba(255,255,255,0.06);
-  padding:10px 14px;
-  border-radius:10px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  cursor:grab;
-  display:none;
-}
+/* floating task preview */
+#floatingTask{ position:fixed; top:90px; right:20px; z-index:1200; background: rgba(255,255,255,0.06); padding:10px 14px; border-radius:10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); cursor:grab; display:none; }
 
-/* custom prompt and error prompt share styles */
-#customPrompt, #errorPrompt{
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background: var(--prompt-bg);
-  backdrop-filter: blur(8px);
-  padding:22px;
-  border-radius:12px;
-  z-index:2000;
-  display:none;
-  width:360px;
-  text-align:center;
-}
+/* prompt windows */
+#customPrompt, #errorPrompt{ position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background: var(--prompt-bg); backdrop-filter: blur(8px); padding:22px; border-radius:12px; z-index:2000; display:none; width:360px; text-align:center; }
 #customPrompt input{ width:100%; padding:10px; border-radius:8px; border:none; margin:12px 0; }
 #customPrompt .accept-btn{ background:#4caf50; color:#fff; }
 #customPrompt .cancel-btn{ background:#f44336; color:#fff; }
+#errorPrompt button{ margin-top:12px; padding:10px 18px; border-radius:8px; border:none; background:#fff; color:#000; font-weight:700; }
 
-/* error prompt button */
-#errorPrompt button{
-  margin-top:12px; padding:10px 18px; border-radius:8px; border:none; background:#fff; color:#000; font-weight:700;
-}
-
-/* small responsive tweaks */
 @media (max-width:640px){
   h1{ font-size:2rem; }
   #floatingTask{ right:10px; top:84px; }
   .container{ margin:80px 10px; padding:18px; }
-}
-
-/* accessibility focus */
-.edit-icon:focus, .delete-icon:focus, button:focus{ outline:3px solid rgba(0,229,255,0.22); outline-offset:2px; }
-
-/* ========================================================================
-   End Styles
-   ======================================================================== */
-
-/* ========================= ADDITIONAL MOBILE-FRIENDLY OVERRIDES ========================= */
-
-/* Larger touch targets for mobile */
-@media (max-width:640px){
   button{ padding:14px 20px; border-radius:14px; font-size:1rem; }
-  .top-bar{ height:72px; padding:8px 16px; }
-  .container{ padding:18px; margin-top:100px; }
-  .channel{ padding:16px; border-radius:12px; }
-  .task-check{ width:26px; height:26px; flex:0 0 26px; }
-  .task-check.checked::after{ font-size:14px; left:5px; top:-4px; }
-  .task-text{ font-size:1rem; }
 }
-
-/* Better scrolling behaviour on mobile */
-.channels-row{ -webkit-overflow-scrolling: touch; }
-
-/* Make floating task easier to tap on small screens */
-#floatingTask{ touch-action:manipulation; }
-
-/* Ensure modal dialogs fit small screens */
-#customPrompt, #errorPrompt{ max-width:92vw; width:92vw; }
-
-/* Device badge in top bar (will be injected by JS) */
-#deviceBadge{
-  font-size:0.9rem;
-  padding:6px 10px;
-  border-radius:10px;
-  background: rgba(255,255,255,0.06);
-  margin-inline-start:12px;
-  color:var(--text);
-}
-
-/* Improve visual spacing for RTL small screens */
-@media (max-width:420px){
-  h1{ font-size:1.6rem; }
-  .top-controls{ gap:8px; }
-  .channel{ padding:12px; }
-}
-
 </style>
 </head>
 <body>
-
-<!-- Top bar showing day/date -->
-<div class="top-bar">
-  <div id="dayDateBar" aria-live="polite"></div>
-  <div id="deviceBadge" aria-hidden="true"></div>
-</div>
-
-<!-- Main container -->
-<div class="container" role="main" aria-label="منظم المهام">
+<div class="top-bar"><div id="dayDateBar"></div><div id="deviceBadge"></div></div>
+<div class="container">
   <h1>منظم المهام الذكي</h1>
-
-  <div class="top-controls" role="toolbar" aria-label="أدوات">
+  <div class="top-controls">
     <button class="add-btn" onclick="openPrompt('task')">إضافة مهمة</button>
     <button class="add-channel-btn" onclick="openPrompt('channel')">إضافة قناة</button>
     <button class="delete-btn" onclick="openPrompt('reset')">إعادة ضبط الكل</button>
   </div>
-
-  <!-- channels row: items will wrap to the next row after 3 per row on wide screens -->
-  <div class="channels-row" id="channelsContainer" aria-live="polite"></div>
+  <div class="channels-row" id="channelsContainer"></div>
 </div>
 
-<!-- floating task preview (top-right) -->
-<div id="floatingTask" draggable="true" aria-hidden="true">
-  <span id="floatingTaskText"></span>
-</div>
-
-<!-- custom prompt -->
-<div id="customPrompt" role="dialog" aria-modal="true" aria-hidden="true">
-  <div id="promptText" style="font-weight:700; margin-bottom:8px;"></div>
-  <input type="text" id="customPromptInput" aria-label="نص الإدخال" />
-  <div style="margin-top:8px;">
-    <button class="accept-btn" onclick="confirmPrompt()">موافق</button>
-    <button class="cancel-btn" onclick="cancelPrompt()">إلغاء</button>
-  </div>
-</div>
-
-<!-- custom error prompt -->
-<div id="errorPrompt" role="alertdialog" aria-hidden="true" aria-live="assertive" style="display:none;">
-  <p id="errorMsg" style="font-weight:700; margin:0 0 12px;"></p>
-  <button id="errorOk" onclick="document.getElementById('errorPrompt').style.display='none'">موافق</button>
-</div>
+<div id="floatingTask" draggable="true"><span id="floatingTaskText"></span></div>
+<div id="customPrompt"><div id="promptText"></div><input type="text" id="customPromptInput" /><div><button class="accept-btn" onclick="confirmPrompt()">موافق</button><button class="cancel-btn" onclick="cancelPrompt()">إلغاء</button></div></div>
+<div id="errorPrompt"><p id="errorMsg"></p><button id="errorOk" onclick="document.getElementById('errorPrompt').style.display='none'">موافق</button></div>
 
 <script>
 /* ========================================================================
    Smart Student Task Organizer — Script
    ======================================================================== */
-
-/* stored structure:
-   {
-     order: ["مهم","غير مهم"],
-     channels: {
-       "مهم": [{text:"task", checked:false}, ...],
-       ...
-     }
-   }
-*/
-let stored = JSON.parse(localStorage.getItem("tasksDataV2")) || {
-  order: ["مهم", "غير مهم", "عاجل", "غير عاجل"],
-  channels: { "مهم": [], "غير مهم": [], "عاجل": [], "غير عاجل": [] }
-};
-
+let stored = JSON.parse(localStorage.getItem("tasksDataV2")) || { order: ["مهم","غير مهم","عاجل","غير عاجل"], channels: { "مهم": [], "غير مهم": [], "عاجل": [], "غير عاجل": [] } };
 const container = document.getElementById("channelsContainer");
 const floatingTask = document.getElementById("floatingTask");
 const floatingTaskText = document.getElementById("floatingTaskText");
 const promptInput = document.getElementById("customPromptInput");
 const dayDateBar = document.getElementById("dayDateBar");
 const deviceBadge = document.getElementById("deviceBadge");
-let draggedTaskData = null;
-let promptType = "";
-let currentChannelToEdit = "";
+let draggedTaskData = null, promptType = "", currentChannelToEdit = "";
 
-/* ----------------- helper: save to localStorage ----------------- */
-function saveData(){
-  try{
-    localStorage.setItem("tasksDataV2", JSON.stringify(stored));
-  }catch(e){
-    console.warn("Failed to save localStorage:", e);
-  }
-}
-
-/* ----------------- show custom error prompt ----------------- */
-function showError(msg){
-  const ep = document.getElementById("errorPrompt");
-  const em = document.getElementById("errorMsg");
-  ep.style.display = "block";
-  em.textContent = msg;
-  // focus OK for accessibility
-  setTimeout(()=>document.getElementById("errorOk").focus(),50);
-}
-
-/* ----------------- date display ----------------- */
-function updateDayDate(){
-  const now = new Date();
-  const days = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-  const day = days[now.getDay()];
-  const date = now.toLocaleDateString("ar-EG",{year:'numeric',month:'long',day:'numeric'});
-  dayDateBar.textContent = `${day} - ${date}`;
-}
+function saveData(){ localStorage.setItem("tasksDataV2", JSON.stringify(stored)); }
+function showError(msg){ const ep=document.getElementById("errorPrompt"); const em=document.getElementById("errorMsg"); ep.style.display="block"; em.textContent=msg; setTimeout(()=>document.getElementById("errorOk").focus(),50);}
+function updateDayDate(){ const now=new Date(); const days=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"]; const day=days[now.getDay()]; const date=now.toLocaleDateString("ar-EG",{year:'numeric',month:'long',day:'numeric'}); dayDateBar.textContent=`${day} - ${date}`; }
 updateDayDate();
 
-/* ----------------- device detection (simple, non-invasive) ----------------- */
-function detectDevice(){
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  let device = 'جهاز غير معروف';
-  if(/android/i.test(ua)) device = 'Android';
-  else if(/iPad|iPhone|iPod/.test(ua) && !window.MSStream) device = 'iOS';
-  else if(/Windows NT/.test(ua)) device = 'Windows';
-  else if(/Macintosh/.test(ua)) device = 'macOS';
-  else if(/Linux/.test(ua)) device = 'Linux';
-
-  // mobile vs desktop classification
-  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
-  deviceBadge.textContent = isMobile ? `هاتف — ${device}` : `كمبيوتر — ${device}`;
-  deviceBadge.setAttribute('aria-hidden','false');
-}
-
-/* run detection on load */
+function detectDevice(){ const ua=navigator.userAgent||navigator.vendor||window.opera; let device='جهاز'; const isMobile=/Mobi|Android|iPhone|iPad|iPod/i.test(ua); deviceBadge.textContent=isMobile?'هاتف':'كمبيوتر'; }
 detectDevice();
 
-/* ----------------- utility escaping ----------------- */
-function escapeHtml(s){
-  if(s === null || s === undefined) return "";
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;");
-}
+function escapeHtml(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;");}
+function escapeJs(s){return String(s??"").replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/\"/g,'\\\"');}
+function htmlSafeId(s){return 'ch_'+String(s).replace(/[^\w\-]/g,'_');}
 
-/* ----------------- render UI ----------------- */
 function render(){
-  container.innerHTML = "";
-  stored.order.forEach(channel => {
-    const tasks = stored.channels[channel] || [];
-    const total = tasks.length;
-    const completedCount = tasks.filter(t=>t.checked).length;
-    const progressPercent = total? Math.round((completedCount/total)*100) : 0;
-
-    const chDiv = document.createElement("div");
-    chDiv.className = "channel" + (progressPercent===100? " completed": "");
-    chDiv.innerHTML = `
+  container.innerHTML="";
+  stored.order.forEach(channel=>{
+    const tasks=stored.channels[channel]||[];
+    const total=tasks.length, completed=tasks.filter(t=>t.checked).length;
+    const percent=total?Math.round((completed/total)*100):0;
+    const chDiv=document.createElement("div");
+    chDiv.className="channel"+(percent===100?" completed":"");
+    chDiv.innerHTML=`
       <div class="channel-header">
         <div class="channel-title">
           <span class="channel-name">${escapeHtml(channel)}</span>
-          <span class="edit-icon" title="تعديل اسم القناة" onclick="editChannel('${escapeJs(channel)}')" tabindex="0" role="button" aria-label="تعديل">✏️</span>
+          <span class="edit-icon" onclick="editChannel('${escapeJs(channel)}')">✎</span>
         </div>
-        <span class="delete-icon" onclick="deleteChannel('${escapeJs(channel)}')" role="button" tabindex="0" aria-label="حذف">✖</span>
+        <span class="delete-icon" onclick="deleteChannel('${escapeJs(channel)}')">✖</span>
       </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${progressPercent}%"></div></div>
-      <ul id="ul-${htmlSafeId(channel)}"></ul>
-    `;
+      <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+      <ul id="ul-${htmlSafeId(channel)}"></ul>`;
     container.appendChild(chDiv);
-
-    const ul = document.getElementById(`ul-${htmlSafeId(channel)}`);
-    (stored.channels[channel] || []).forEach(task => {
-      const li = document.createElement("li");
-      li.draggable = true;
-      li.innerHTML = `
-        <div class="task-content">
-          <div class="task-check ${task.checked?'checked':''}" onclick="toggleCheck('${escapeJs(channel)}','${escapeJs(task.text)}')" role="checkbox" aria-checked="${task.checked}"></div>
-          <span class="task-text">${escapeHtml(task.text)}</span>
-        </div>
-        <span class="delete-task" onclick="deleteTask('${escapeJs(channel)}','${escapeJs(task.text)}')" role="button" tabindex="0" aria-label="حذف المهمة">✖</span>
-      `;
-      li.addEventListener("dragstart", e=>{
-        draggedTaskData = { text: task.text, fromChannel: channel, isNew:false };
-      });
+    const ul=document.getElementById(`ul-${htmlSafeId(channel)}`);
+    tasks.forEach(task=>{
+      const li=document.createElement("li");
+      li.draggable=true;
+      li.innerHTML=`<div class="task-content"><div class="task-check ${task.checked?'checked':''}" onclick="toggleCheck('${escapeJs(channel)}','${escapeJs(task.text)}')"></div><span class="task-text">${escapeHtml(task.text)}</span></div><span class="delete-task" onclick="deleteTask('${escapeJs(channel)}','${escapeJs(task.text)}')">✖</span>`;
+      li.addEventListener("dragstart",()=>{draggedTaskData={text:task.text,fromChannel:channel,isNew:false};});
       ul.appendChild(li);
     });
-
-    /* drag/drop handlers on channel card */
-    chDiv.addEventListener("dragover", e=>{
-      e.preventDefault();
-      chDiv.classList.add("hovered");
-    });
-    chDiv.addEventListener("dragleave", e=>{
-      chDiv.classList.remove("hovered");
-    });
-    chDiv.addEventListener("drop", e=>{
-      e.preventDefault();
-      chDiv.classList.remove("hovered");
-      if(!draggedTaskData) return;
-      const { text, fromChannel, isNew } = draggedTaskData;
-      if(isNew){
-        // add to this channel
-        stored.channels[channel].push({ text, checked:false });
-      } else {
-        // move from old channel
-        if(stored.channels[fromChannel]){
-          stored.channels[fromChannel] = stored.channels[fromChannel].filter(t=>t.text !== text);
-        }
-        stored.channels[channel].push({ text, checked:false });
-      }
-      saveData();
-      render();
-      draggedTaskData = null;
-      floatingTask.style.display = "none";
+    chDiv.addEventListener("dragover",e=>{e.preventDefault();chDiv.classList.add("hovered");});
+    chDiv.addEventListener("dragleave",()=>chDiv.classList.remove("hovered"));
+    chDiv.addEventListener("drop",e=>{
+      e.preventDefault();chDiv.classList.remove("hovered");
+      if(!draggedTaskData)return;
+      const {text,fromChannel,isNew}=draggedTaskData;
+      if(isNew)stored.channels[channel].push({text,checked:false});
+      else{stored.channels[fromChannel]=stored.channels[fromChannel].filter(t=>t.text!==text);stored.channels[channel].push({text,checked:false});}
+      saveData();render();draggedTaskData=null;floatingTask.style.display="none";
     });
   });
 }
 
-/* ----------------- helpers to sanitize js-injected strings ----------------- */
-function escapeJs(s){
-  if(s === null || s === undefined) return "";
-  return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/\"/g,'\\\"');
-}
-function htmlSafeId(s){
-  return 'ch_'+String(s).replace(/[^\w\-]/g,'_');
-}
+function editChannel(name){currentChannelToEdit=name;openPrompt('editChannel');}
+function deleteChannel(name){delete stored.channels[name];stored.order=stored.order.filter(ch=>ch!==name);saveData();render();}
+function toggleCheck(channel,task){const t=stored.channels[channel].find(x=>x.text===task);if(t)t.checked=!t.checked;saveData();render();}
+function deleteTask(ch,task){stored.channels[ch]=stored.channels[ch].filter(x=>x.text!==task);saveData();render();}
 
-/* ----------------- channel actions ----------------- */
-function editChannel(channelName){
-  currentChannelToEdit = channelName;
-  openPrompt('editChannel');
-}
-function deleteChannel(name){
-  // remove from data
-  delete stored.channels[name];
-  stored.order = stored.order.filter(ch => ch !== name);
-  saveData();
-  render();
-}
-
-/* ----------------- task actions ----------------- */
-function toggleCheck(channel, taskText){
-  const list = stored.channels[channel] || [];
-  const t = list.find(x=>x.text === taskText);
-  if(t) t.checked = !t.checked;
-  saveData();
-  render();
-}
-function deleteTask(channel, taskText){
-  if(!stored.channels[channel]) return;
-  stored.channels[channel] = stored.channels[channel].filter(x=>x.text !== taskText);
-  saveData();
-  render();
-}
-
-/* ----------------- Prompt logic ----------------- */
-function openPrompt(type){
-  promptType = type;
-  const prompt = document.getElementById("customPrompt");
-  prompt.style.display = "block";
-  prompt.setAttribute("aria-hidden","false");
-  promptInput.value = "";
-  promptInput.style.display = (type === "reset") ? "none" : "block";
-
-  if(type === "task"){
-    document.getElementById("promptText").textContent = "أدخل اسم المهمة:";
-  } else if(type === "channel"){
-    document.getElementById("promptText").textContent = "أدخل اسم القناة:";
-  } else if(type === "reset"){
-    document.getElementById("promptText").textContent = "هل أنت متأكد أنك تريد إعادة ضبط الكل؟";
-  } else if(type === "editChannel"){
-    document.getElementById("promptText").textContent = "ما الذي تريد تغيير اسم القناة إليه؟";
-    promptInput.value = currentChannelToEdit;
-  }
-  setTimeout(()=>promptInput.focus(),50);
-}
-
-function cancelPrompt(){
-  const prompt = document.getElementById("customPrompt");
-  prompt.style.display = "none";
-  prompt.setAttribute("aria-hidden","true");
-  currentChannelToEdit = "";
-}
-
+function openPrompt(type){promptType=type;const p=document.getElementById("customPrompt");p.style.display="block";promptInput.value="";if(type==='task')document.getElementById("promptText").textContent="أدخل اسم المهمة:";else if(type==='channel')document.getElementById("promptText").textContent="أدخل اسم القناة:";else if(type==='reset')document.getElementById("promptText").textContent="هل أنت متأكد؟";else if(type==='editChannel'){document.getElementById("promptText").textContent="تغيير اسم القناة:";promptInput.value=currentChannelToEdit;}setTimeout(()=>promptInput.focus(),50);}
+function cancelPrompt(){document.getElementById("customPrompt").style.display="none";}
 function confirmPrompt(){
-  const inputVal = promptInput.value.trim();
-
-  if(promptType === "task"){
-    if(!inputVal){
-      cancelPrompt();
-      return;
-    }
-    // if no channels, show custom error
-    if(!stored.order || stored.order.length === 0){
-      showError("⚠️ لا يمكنك إضافة مهمة لأنه لا توجد قنوات.");
-      cancelPrompt();
-      return;
-    }
-    // show floating spawn (top-right)
-    floatingTaskText.textContent = inputVal;
-    floatingTask.style.display = "block";
-    floatingTask.setAttribute("aria-hidden","false");
-    draggedTaskData = { text: inputVal, fromChannel: null, isNew: true };
-    cancelPrompt();
-    return;
-  } else if(promptType === "channel"){
-    if(!inputVal){ cancelPrompt(); return; }
-    if(stored.order.includes(inputVal)){
-      showError("⚠️ يوجد قناة بنفس الاسم بالفعل.");
-      return;
-    }
-    stored.order.push(inputVal);
-    stored.channels[inputVal] = [];
-    saveData();
-    render();
-    cancelPrompt();
-    return;
-  } else if(promptType === "reset"){
-    // use custom prompt confirmation only (no confirm())
-    // perform reset
-    stored = {
-      order: ["مهم", "غير مهم", "عاجل", "غير عاجل"],
-      channels: { "مهم": [], "غير مهم": [], "عاجل": [], "غير عاجل": [] }
-    };
-    saveData();
-    render();
-    cancelPrompt();
-    return;
-  } else if(promptType === "editChannel"){
-    if(!inputVal){ cancelPrompt(); return; }
-    if(inputVal === currentChannelToEdit){ cancelPrompt(); return; }
-    if(stored.order.includes(inputVal)){
-      showError("⚠️ اسم القناة موجود مسبقًا. اختر اسمًا آخر.");
-      return;
-    }
-    const oldName = currentChannelToEdit;
-    const idx = stored.order.indexOf(oldName);
-    if(idx !== -1) stored.order[idx] = inputVal;
-    stored.channels[inputVal] = stored.channels[oldName] || [];
-    delete stored.channels[oldName];
-    saveData();
-    render();
-    cancelPrompt();
-    return;
-  }
+  const v=promptInput.value.trim();
+  if(promptType==="task"){if(!v)return;floatingTaskText.textContent=v;floatingTask.style.display="block";draggedTaskData={text:v,fromChannel:null,isNew:true};cancelPrompt();}
+  else if(promptType==="channel"){if(!v)return;stored.order.push(v);stored.channels[v]=[];saveData();render();cancelPrompt();}
+  else if(promptType==="reset"){localStorage.removeItem("tasksDataV2");location.reload();}
+  else if(promptType==="editChannel"){if(!v)return;stored.channels[v]=stored.channels[currentChannelToEdit];delete stored.channels[currentChannelToEdit];stored.order=stored.order.map(c=>c===currentChannelToEdit?v:c);saveData();render();cancelPrompt();}
 }
 
-/* ----------------- floating task drag behavior ----------------- */
-floatingTask.addEventListener("dragstart", e=>{
-  e.dataTransfer.setData("text/plain", "floating");
-});
-floatingTask.addEventListener("dragend", e=>{
-  floatingTask.style.display = "none";
-  draggedTaskData = null;
-  floatingTask.setAttribute("aria-hidden","true");
-});
+/* ----------------- Custom touch drag & drop for mobile ----------------- */
+(function enableTouchDrag(){
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if(!isMobile) return;
+  let touchDraggedTask=null,touchFloating=null;
 
-/* pressing Enter in custom prompt */
-promptInput.addEventListener("keydown", e=>{
-  if(e.key === "Enter") confirmPrompt();
-});
+  document.addEventListener("touchstart",e=>{
+    const li=e.target.closest("li"); if(!li)return;
+    const ul=li.closest("ul"); if(!ul)return;
+    const channel=Object.keys(stored.channels).find(k=>`ul-${htmlSafeId(k)}`===ul.id);
+    if(!channel)return;
+    const textEl=li.querySelector(".task-text"); if(!textEl)return;
+    const taskText=textEl.textContent;
+    touchDraggedTask={text:taskText,fromChannel:channel};
+    touchFloating=li.cloneNode(true);
+    touchFloating.style.position="fixed";
+    touchFloating.style.pointerEvents="none";
+    touchFloating.style.opacity="0.9";
+    touchFloating.style.zIndex="3000";
+    touchFloating.style.transform="scale(1.05)";
+    touchFloating.style.boxShadow="0 10px 30px rgba(0,0,0,0.6)";
+    document.body.appendChild(touchFloating);
+    const t=e.touches[0]; touchFloating.style.left=t.clientX+"px"; touchFloating.style.top=t.clientY+"px";
+  });
 
-/* reposition pencils or any dynamic adjustments on resize */
-window.addEventListener("resize", ()=>{
-  // no special repositioning needed; flex-wrap handles layout
-});
+  document.addEventListener("touchmove",e=>{
+    if(!touchFloating)return;
+    const t=e.touches[0];
+    touchFloating.style.left=(t.clientX-60)+"px";
+    touchFloating.style.top=(t.clientY-20)+"px";
+    e.preventDefault();
+  },{passive:false});
+
+  document.addEventListener("touchend",e=>{
+    if(!touchFloating||!touchDraggedTask)return;
+    const t=e.changedTouches[0];
+    const elem=document.elementFromPoint(t.clientX,t.clientY);
+    const dropChannelEl=elem?elem.closest(".channel"):null;
+    if(dropChannelEl){
+      const nameEl=dropChannelEl.querySelector(".channel-name");
+      if(nameEl){
+        const dropChannel=nameEl.textContent.trim();
+        const {text,fromChannel}=touchDraggedTask;
+        stored.channels[fromChannel]=stored.channels[fromChannel].filter(x=>x.text!==text);
+        stored.channels[dropChannel].push({text,checked:false});
+        saveData();render();
+      }
+    }
+    touchFloating.remove();
+    touchFloating=null;
+    touchDraggedTask=null;
+  });
+})();
 
 /* initial render */
 render();
-
-
 </script>
-
 </body>
 </html>
