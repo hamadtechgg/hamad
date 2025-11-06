@@ -1,503 +1,244 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منظم المهام الذكي</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>منظم المهام الذكي للطلاب</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  body {
-    background: linear-gradient(145deg, #1a1a1a, #2c2c2c);
-    color: #fff;
-    font-family: "Tajawal", sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-x: hidden;
-  }
-  h1 {
-    font-size: 2.4rem;
-    margin-top: 20px;
-    text-shadow: 0 0 10px #f00;
-  }
-  .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 95vw;
-    margin: 20px auto;
-    gap: 12px;
-  }
-  .channel {
-    background: rgba(40, 40, 40, 0.9);
-    border-radius: 18px;
-    width: 220px;
-    padding: 12px;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
-    position: relative;
-    transition: transform 0.2s;
-  }
-  .channel:hover {
-    transform: translateY(-3px);
-  }
-  .channel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .channel-name {
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
-  .delete-channel {
-    color: red;
-    font-size: 20px;
-    cursor: pointer;
-    line-height: 1;
-    transition: transform 0.2s;
-  }
-  .delete-channel:hover {
-    transform: scale(1.2);
-  }
-  .tasks {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    max-height: 250px;
-    overflow-y: auto;
-  }
-  .task {
-    background: #333;
-    padding: 6px 8px;
-    border-radius: 10px;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: grab;
-    transition: background 0.2s;
-  }
-  .task:hover {
-    background: #444;
-  }
-  .task.done .task-text {
-    text-decoration: line-through;
-    opacity: 0.6;
-  }
-  .task-text {
-    flex: 1;
-    margin-right: 6px;
-    text-align: right;
-  }
-  .task-actions {
-    display: flex;
-    gap: 4px;
-  }
-  .task-actions button {
-    background: transparent;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    font-size: 16px;
-    transition: transform 0.2s;
-  }
-  .task-actions button:hover {
-    transform: scale(1.2);
-  }
-  .task-actions .edit-btn::before {
-    content: "✎";
-  }
-  .task-actions .edit-btn:hover {
-    transform: rotate(45deg);
-  }
-  .task-actions .delete-btn::before {
-    content: "×";
-    color: red;
-    font-weight: bold;
-  }
-  .task-actions .check-btn::before {
-    content: "✔";
-    color: lime;
-  }
-
-  .add-task {
-    display: flex;
-    gap: 5px;
-    margin-top: 8px;
-  }
-  .add-task input {
-    flex: 1;
-    border-radius: 8px;
-    border: none;
-    padding: 5px;
-    outline: none;
-    font-family: inherit;
-  }
-  .add-task button {
-    background: red;
-    border: none;
-    color: #fff;
-    border-radius: 8px;
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .add-task button:hover {
-    background: #b00;
-  }
-
-  .floating-task {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background: red;
-    padding: 8px 15px;
-    border-radius: 10px;
-    color: white;
-    font-weight: bold;
-    cursor: grab;
-    z-index: 1000;
-    display: none;
-  }
-
-  .prompt-popup {
-    background: #222;
-    border-radius: 12px;
-    padding: 15px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-    z-index: 2000;
-    display: none;
-  }
-  .prompt-popup input {
-    border-radius: 8px;
-    border: none;
-    padding: 6px;
-    margin-bottom: 8px;
-    width: 100%;
-  }
-  .prompt-popup button {
-    background: red;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    padding: 6px 10px;
-    cursor: pointer;
-    margin-left: 4px;
-  }
-
-  #resetAll {
-    background: red;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 8px 14px;
-    cursor: pointer;
-    margin-bottom: 12px;
-  }
+:root{
+  --bg1:#2e004f;--bg2:#4b0082;--bg3:#5a2a83;
+  --accent-a:#00e5ff;--accent-b:#00bcd4;
+  --success:#00ff66;--danger:#ff4d4d;
+  --glass:rgba(255,255,255,0.08);--glass-strong:rgba(255,255,255,0.12);
+  --prompt-bg:rgba(255,255,255,0.1);--text:#fff;
+}
+html,body{
+  margin:0;padding:0;height:100%;
+  font-family:'Tajawal',sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  background-size:400% 400%;animation:purpleGradient 20s ease infinite;
+  color:var(--text);
+}
+@keyframes purpleGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.top-bar{
+  position:fixed;top:0;left:0;right:0;height:68px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.12);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  z-index:1000;box-shadow:0 3px 14px rgba(0,0,0,0.35);
+}
+.container{
+  width:95%;max-width:1400px;margin:92px auto 40px;
+  background:rgba(255,255,255,0.06);border-radius:18px;padding:28px;
+  box-shadow:0 18px 50px rgba(0,0,0,0.5);backdrop-filter:blur(10px);
+}
+h1{text-align:center;font-size:3rem;margin:0 0 18px;text-shadow:0 6px 18px rgba(0,0,0,0.5);}
+.top-controls{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:22px;}
+button{border:0;outline:0;padding:10px 18px;border-radius:12px;font-weight:700;cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,0.35);transition:transform .18s ease,box-shadow .18s ease;}
+button:hover{transform:translateY(-2px) scale(1.02);}
+button.add-btn{background:linear-gradient(45deg,var(--accent-a),var(--accent-b));color:#002;}
+button.add-channel-btn{background:linear-gradient(45deg,#2e7d32,#43a047);color:#fff;}
+button.delete-btn{background:linear-gradient(45deg,#ff4d4d,#ff1a1a);color:#fff;}
+.channels-row{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;overflow-x:hidden;
+  max-height:75vh;overflow-y:auto;padding:10px;}
+.channel{
+  background:var(--glass);border-radius:14px;padding:18px;min-width:260px;
+  flex:1 1 calc(33.333% - 20px);box-sizing:border-box;
+  box-shadow:0 12px 40px rgba(0,0,0,0.45);transition:.28s ease all;
+  position:relative;
+}
+.channel.hovered{outline:3px dashed rgba(0,229,255,0.35);}
+.channel.completed{background:rgba(0,255,102,0.08);}
+@media(max-width:980px){.channel{flex:1 1 calc(50% - 18px);min-width:220px;}}
+@media(max-width:560px){.channel{flex:1 1 100%;min-width:100%;}}
+.channel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;}
+.channel-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.1rem;}
+.edit-icon{cursor:pointer;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;
+  color:#fff;font-size:16px;border-radius:6px;transition:.2s;}
+.edit-icon:hover{transform:rotate(45deg);background:rgba(255,255,255,0.06);}
+.delete-icon{cursor:pointer;color:var(--danger);font-weight:800;font-size:1.3rem;}
+.progress-bar{width:100%;height:10px;background:rgba(255,255,255,0.12);border-radius:6px;overflow:hidden;margin-bottom:14px;}
+.progress-fill{height:100%;width:0%;border-radius:6px;background:linear-gradient(90deg,var(--accent-a),var(--accent-b));transition:width .36s ease;}
+ul{list-style:none;margin:0;padding:0;min-height:60px;}
+li{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0;padding:10px 12px;border-radius:10px;
+  cursor:grab;background:rgba(255,255,255,0.06);transition:.16s;}
+li:hover{transform:translateY(-3px) scale(1.01);background:rgba(255,255,255,0.09);}
+.task-content{display:flex;align-items:center;gap:10px;flex:1;}
+.task-check{width:22px;height:22px;border-radius:4px;border:2px solid var(--accent-a);cursor:pointer;position:relative;}
+.task-check.checked{background:var(--accent-a);border-color:transparent;}
+.task-check.checked::after{content:"✔";position:absolute;color:#fff;font-size:12px;left:3px;top:-3px;}
+.delete-task{color:var(--danger);font-weight:800;font-size:1.2rem;cursor:pointer;}
+#floatingTask{position:fixed;top:90px;right:20px;z-index:1200;background:rgba(255,255,255,0.06);padding:10px 14px;
+  border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.5);cursor:grab;display:none;}
+#customPrompt,#errorPrompt{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--prompt-bg);backdrop-filter:blur(8px);padding:22px;border-radius:12px;z-index:2000;display:none;width:360px;text-align:center;}
+#customPrompt input{width:100%;padding:10px;border-radius:8px;border:none;margin:12px 0;}
+#customPrompt .accept-btn{background:#4caf50;color:#fff;}
+#customPrompt .cancel-btn{background:#f44336;color:#fff;}
+#errorPrompt button{margin-top:12px;padding:10px 18px;border-radius:8px;border:none;background:#fff;color:#000;font-weight:700;}
+@media(max-width:640px){h1{font-size:2rem;}}
 </style>
 </head>
 <body>
-<h1>منظم المهام الذكي</h1>
-<button id="resetAll">إعادة ضبط الكل</button>
-<div class="container" id="channels"></div>
-
-<div class="prompt-popup" id="promptPopup">
-  <input id="promptInput" placeholder="اسم المهمة..." />
-  <div style="text-align:center;">
-    <button id="promptOk">موافق</button>
-    <button id="promptCancel">إلغاء</button>
+<div class="top-bar"><div id="dayDateBar"></div></div>
+<div class="container">
+  <h1>منظم المهام الذكي</h1>
+  <div class="top-controls">
+    <button class="add-btn" onclick="openPrompt('task')">إضافة مهمة</button>
+    <button class="add-channel-btn" onclick="openPrompt('channel')">إضافة قناة</button>
+    <button class="delete-btn" onclick="openPrompt('reset')">إعادة ضبط الكل</button>
   </div>
+  <div class="channels-row" id="channelsContainer"></div>
 </div>
 
+<div id="floatingTask" draggable="true"><span id="floatingTaskText"></span></div>
+<div id="customPrompt">
+  <div id="promptText"></div>
+  <input type="text" id="customPromptInput"/>
+  <div>
+    <button class="accept-btn" onclick="confirmPrompt()">موافق</button>
+    <button class="cancel-btn" onclick="cancelPrompt()">إلغاء</button>
+  </div>
+</div>
+<div id="errorPrompt"><p id="errorMsg"></p><button onclick="this.parentElement.style.display='none'">موافق</button></div>
+
 <script>
-const channelsContainer=document.getElementById("channels");
-const popup=document.getElementById("promptPopup");
-const popupInput=document.getElementById("promptInput");
-const btnOk=document.getElementById("promptOk");
-const btnCancel=document.getElementById("promptCancel");
-let stored=JSON.parse(localStorage.getItem("taskData"))||{channels:{},order:[]};
-let currentChannel=null;
-let floatingTask=null;
+let stored=JSON.parse(localStorage.getItem("tasksDataV2"))||{order:["مهم","غير مهم","عاجل","غير عاجل"],channels:{"مهم":[],"غير مهم":[],"عاجل":[],"غير عاجل":[]}};
+const container=document.getElementById("channelsContainer");
+const floatingTask=document.getElementById("floatingTask");
+const floatingTaskText=document.getElementById("floatingTaskText");
+const promptInput=document.getElementById("customPromptInput");
+let draggedTaskData=null,promptType="",currentChannelToEdit="";
+const isTouchDevice=('ontouchstart'in window)||(navigator.maxTouchPoints>0);
 
-function saveData(){
-  localStorage.setItem("taskData",JSON.stringify(stored));
-}
-
+function saveData(){localStorage.setItem("tasksDataV2",JSON.stringify(stored));}
+function escapeHtml(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function escapeJs(s){return String(s??"").replace(/\\/g,"\\\\").replace(/'/g,"\\'");}
+function htmlSafeId(s){return'c_'+String(s).replace(/[^\w\-]/g,'_');}
 function render(){
-  channelsContainer.innerHTML="";
-  stored.order.forEach(ch=>{
-    const channel=document.createElement("div");
-    channel.className="channel";
-    const head=document.createElement("div");
-    head.className="channel-header";
-    const name=document.createElement("span");
-    name.className="channel-name";
-    name.textContent=ch;
-    const del=document.createElement("span");
-    del.className="delete-channel";
-    del.textContent="×";
-    del.onclick=()=>deleteChannel(ch);
-    head.append(name,del);
-    channel.appendChild(head);
-
-    const ul=document.createElement("ul");
-    ul.className="tasks";
-    ul.ondragover=e=>e.preventDefault();
-    ul.ondrop=e=>onDrop(e,ch);
-    stored.channels[ch].forEach(task=>{
+  container.innerHTML="";
+  stored.order.forEach(channel=>{
+    const tasks=stored.channels[channel]||[];
+    const total=tasks.length,completed=tasks.filter(t=>t.checked).length;
+    const percent=total?Math.round(completed/total*100):0;
+    const chDiv=document.createElement("div");
+    chDiv.className="channel"+(percent===100?" completed":"");
+    chDiv.innerHTML=`
+      <div class="channel-header">
+        <div class="channel-title">
+          <span class="channel-name">${escapeHtml(channel)}</span>
+          <span class="edit-icon" onclick="editChannel('${escapeJs(channel)}')">✎</span>
+        </div>
+        <span class="delete-icon" onclick="deleteChannel('${escapeJs(channel)}')">✖</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+      <ul id="ul-${htmlSafeId(channel)}"></ul>`;
+    container.appendChild(chDiv);
+    const ul=document.getElementById(`ul-${htmlSafeId(channel)}`);
+    tasks.forEach(task=>{
       const li=document.createElement("li");
-      li.className="task";
-      if(task.checked)li.classList.add("done");
-      li.draggable=true;
-      li.ondragstart=e=>onDrag(e,ch,task.text);
-      const text=document.createElement("span");
-      text.className="task-text";
-      text.textContent=task.text;
-      const actions=document.createElement("div");
-      actions.className="task-actions";
-
-      const checkBtn=document.createElement("button");
-      checkBtn.className="check-btn";
-      checkBtn.onclick=()=>toggleCheck(ch,task.text);
-
-      const editBtn=document.createElement("button");
-      editBtn.className="edit-btn";
-      editBtn.onclick=()=>editTaskPrompt(ch,task.text);
-
-      const delBtn=document.createElement("button");
-      delBtn.className="delete-btn";
-      delBtn.onclick=()=>deleteTask(ch,task.text);
-
-      actions.append(checkBtn,editBtn,delBtn);
-      li.append(text,actions);
+      li.draggable=!isTouchDevice;
+      li.innerHTML=`
+        <div class="task-content">
+          <div class="task-check ${task.checked?'checked':''}" onclick="toggleCheck('${escapeJs(channel)}','${escapeJs(task.text)}',event)"></div>
+          <span class="task-text">${escapeHtml(task.text)}</span>
+        </div>
+        <span class="delete-task" onclick="deleteTask('${escapeJs(channel)}','${escapeJs(task.text)}')">✖</span>`;
+      li.addEventListener("dragstart",()=>{draggedTaskData={text:task.text,fromChannel:channel,isNew:false};});
+      if(isTouchDevice){
+        li.addEventListener("touchstart",e=>{
+          if(e.target.closest('.task-check'))return;
+          const t=e.touches[0];
+          draggedTaskData={text:task.text,fromChannel:channel,isNew:false};
+          floatingTask.style.display="block";
+          floatingTaskText.textContent=task.text;
+          floatingTask.style.left=t.clientX+"px";
+          floatingTask.style.top=t.clientY+"px";
+        });
+        li.addEventListener("touchmove",e=>{
+          if(!draggedTaskData)return;
+          const t=e.touches[0];
+          floatingTask.style.left=t.clientX+"px";
+          floatingTask.style.top=t.clientY+"px";
+        });
+        li.addEventListener("touchend",e=>{
+          if(!draggedTaskData)return;
+          const t=e.changedTouches[0];
+          const el=document.elementFromPoint(t.clientX,t.clientY);
+          const dropEl=el?el.closest(".channel"):null;
+          if(dropEl){
+            const name=dropEl.querySelector(".channel-name").textContent;
+            stored.channels[draggedTaskData.fromChannel]=stored.channels[draggedTaskData.fromChannel].filter(x=>x.text!==draggedTaskData.text);
+            stored.channels[name].push({text:draggedTaskData.text,checked:false});
+            saveData();render();
+          }
+          floatingTask.style.display="none";draggedTaskData=null;
+        });
+      }
       ul.appendChild(li);
     });
-    channel.appendChild(ul);
-    const add=document.createElement("div");
-    add.className="add-task";
-    const input=document.createElement("input");
-    input.placeholder="مهمة جديدة...";
-    const btn=document.createElement("button");
-    btn.textContent="+";
-    btn.onclick=()=>addTask(ch,input);
-    add.append(input,btn);
-    channel.appendChild(add);
-    channelsContainer.appendChild(channel);
+    chDiv.addEventListener("dragover",e=>e.preventDefault());
+    chDiv.addEventListener("drop",e=>{
+      e.preventDefault();
+      if(!draggedTaskData)return;
+      const{text,fromChannel,isNew}=draggedTaskData;
+      if(isNew)stored.channels[channel].push({text,checked:false});
+      else{
+        stored.channels[fromChannel]=stored.channels[fromChannel].filter(t=>t.text!==text);
+        stored.channels[channel].push({text,checked:false});
+      }
+      saveData();render();draggedTaskData=null;floatingTask.style.display="none";
+    });
   });
 }
-/* ---------------- Channel & Task Logic ---------------- */
-function addChannel(){
-  const name=prompt("اسم القناة:");
-  if(!name||stored.channels[name])return;
-  stored.channels[name]=[];
-  stored.order.push(name);
+function toggleCheck(ch,task,e){
+  e.stopPropagation();
+  const t=stored.channels[ch].find(x=>x.text===task);
+  if(t)t.checked=!t.checked;
   saveData();render();
 }
-
-function addTask(channel,input){
-  const text=input.value.trim();
-  if(!text)return;
-  stored.channels[channel].push({text,checked:false});
-  saveData();render();
-  input.value="";
+function deleteTask(ch,task){stored.channels[ch]=stored.channels[ch].filter(x=>x.text!==task);saveData();render();}
+function deleteChannel(n){delete stored.channels[n];stored.order=stored.order.filter(c=>c!==n);saveData();render();}
+function openPrompt(type){
+  promptType=type;
+  const p=document.getElementById("customPrompt");
+  document.getElementById("promptText").textContent=(type==='task'?"أدخل اسم المهمة:":
+    type==='channel'?"أدخل اسم القناة:":
+    type==='reset'?"هل أنت متأكد؟":"تعديل القناة:");
+  promptInput.value="";p.style.display="block";setTimeout(()=>promptInput.focus(),50);
 }
-
-function deleteChannel(name){
-  if(!confirm(`هل أنت متأكد من حذف القناة "${name}"؟`))return;
-  delete stored.channels[name];
-  stored.order=stored.order.filter(c=>c!==name);
-  saveData();render();
-}
-
-function deleteTask(channel,text){
-  stored.channels[channel]=stored.channels[channel].filter(t=>t.text!==text);
-  saveData();render();
-}
-
-function toggleCheck(channel,text){
-  const t=stored.channels[channel].find(x=>x.text===text);
-  if(!t)return;
-  t.checked=!t.checked;
-  saveData();render();
-}
-
-function editTaskPrompt(channel,text){
-  showPrompt("تعديل المهمة:",text,newText=>{
-    if(!newText)return;
-    const t=stored.channels[channel].find(x=>x.text===text);
-    if(!t)return;
-    t.text=newText.trim();
-    saveData();render();
-  });
-}
-
-/* ---------------- Prompt Popup ---------------- */
-function showPrompt(title,defaultText,callback){
-  popup.style.display="block";
-  popupInput.value=defaultText||"";
-  popupInput.focus();
-  btnOk.onclick=()=>{
-    popup.style.display="none";
-    callback(popupInput.value.trim());
-  };
-  btnCancel.onclick=()=>{
-    popup.style.display="none";
-  };
-  popupInput.onkeydown=e=>{
-    if(e.key==="Enter"){
-      btnOk.click();
+function cancelPrompt(){document.getElementById("customPrompt").style.display="none";}
+function confirmPrompt(){
+  const v=promptInput.value.trim();
+  if(promptType==="task"){
+    if(!v)return;
+    floatingTaskText.textContent=v;floatingTask.style.display="block";
+    draggedTaskData={text:v,fromChannel:null,isNew:true};
+    if(isTouchDevice){
+      floatingTask.addEventListener("touchmove",e=>{
+        const t=e.touches[0];
+        floatingTask.style.left=t.clientX+"px";floatingTask.style.top=t.clientY+"px";
+      });
+      floatingTask.addEventListener("touchend",e=>{
+        const t=e.changedTouches[0];
+        const el=document.elementFromPoint(t.clientX,t.clientY);
+        const dropEl=el?el.closest(".channel"):null;
+        if(dropEl){
+          const name=dropEl.querySelector(".channel-name").textContent;
+          stored.channels[name].push({text:v,checked:false});
+          saveData();render();
+        }
+        floatingTask.style.display="none";draggedTaskData=null;
+      });
     }
-  };
+  }else if(promptType==="channel"){
+    if(!v)return;stored.order.push(v);stored.channels[v]=[];saveData();render();
+  }else if(promptType==="reset"){localStorage.removeItem("tasksDataV2");location.reload();}
+  cancelPrompt();
 }
-
-/* ---------------- Reset Button ---------------- */
-document.getElementById("resetAll").onclick=()=>{
-  showPrompt("هل أنت متأكد من إعادة الضبط؟ اكتب 'نعم' للتأكيد.","",val=>{
-    if(val==="نعم"){
-      localStorage.clear();
-      stored={channels:{},order:[]};
-      render();
-    }
-  });
-};
-
-/* ---------------- Drag & Drop (Desktop) ---------------- */
-function onDrag(ev,from,text){
-  ev.dataTransfer.setData("text/plain",JSON.stringify({from,text}));
-}
-function onDrop(ev,to){
-  ev.preventDefault();
-  const data=JSON.parse(ev.dataTransfer.getData("text/plain"));
-  if(!data)return;
-  const {from,text}=data;
-  if(from===to)return;
-  const task=stored.channels[from].find(t=>t.text===text);
-  if(!task)return;
-  stored.channels[from]=stored.channels[from].filter(t=>t.text!==text);
-  stored.channels[to].push(task);
-  saveData();render();
-}
-
-/* ---------------- Floating Task Spawn (Desktop + Mobile) ---------------- */
-function spawnFloatingTask(){
-  if(floatingTask)return;
-  floatingTask=document.createElement("div");
-  floatingTask.className="floating-task";
-  floatingTask.textContent="مهمة جديدة";
-  document.body.appendChild(floatingTask);
-  floatingTask.style.display="block";
-  floatingTask.draggable=true;
-  floatingTask.ondragstart=e=>{
-    e.dataTransfer.setData("text/plain","newTask");
-  };
-  floatingTask.addEventListener("touchstart",onTouchStart,{passive:false});
-}
-/* ---------------- Floating Task Touch (Mobile) ---------------- */
-let touchTask = null, touchOffsetX = 0, touchOffsetY = 0;
-
-function onTouchStart(e) {
-  if (!floatingTask) return;
-  const t = e.touches[0];
-  touchOffsetX = t.clientX - floatingTask.getBoundingClientRect().left;
-  touchOffsetY = t.clientY - floatingTask.getBoundingClientRect().top;
-  touchTask = true;
-  e.preventDefault();
-}
-
-document.addEventListener("touchmove", e => {
-  if (!touchTask || !floatingTask) return;
-  const t = e.touches[0];
-  floatingTask.style.left = (t.clientX - touchOffsetX) + "px";
-  floatingTask.style.top = (t.clientY - touchOffsetY) + "px";
-  e.preventDefault();
-}, { passive: false });
-
-document.addEventListener("touchend", e => {
-  if (!touchTask) return;
-  const t = e.changedTouches[0];
-  const elem = document.elementFromPoint(t.clientX, t.clientY);
-  const dropChannel = elem ? elem.closest(".channel") : null;
-  if (dropChannel) {
-    const name = dropChannel.querySelector(".channel-name").textContent.trim();
-    stored.channels[name].push({ text: floatingTask.textContent.trim(), checked: false });
-    saveData();
-    render();
-  }
-  floatingTask.remove();
-  floatingTask = null;
-  touchTask = false;
-});
-
-/* ---------------- Pencil Rotation Fix ---------------- */
-const style = document.createElement("style");
-style.textContent = `
-.edit-icon:hover {
-  transform: rotate(45deg) scale(1.1);
-}
-.delete-icon {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-}
-.delete-icon::before,
-.delete-icon::after {
-  content: '';
-  position: absolute;
-  top: 9px;
-  left: 3px;
-  width: 14px;
-  height: 2px;
-  background-color: var(--danger);
-  transition: background-color .2s;
-}
-.delete-icon::before { transform: rotate(45deg); }
-.delete-icon::after { transform: rotate(-45deg); }
-.delete-icon:hover::before,
-.delete-icon:hover::after {
-  background-color: #ff1a1a;
-}
-`;
-document.head.appendChild(style);
-
-/* ---------------- Reset Without Input ---------------- */
-function openPrompt(type) {
-  promptType = type;
-  const p = document.getElementById("customPrompt");
-  const txt = document.getElementById("promptText");
-  if (type === 'reset') {
-    if (confirm("هل أنت متأكد من أنك تريد إعادة ضبط كل المهام؟")) {
-      localStorage.removeItem("tasksDataV2");
-      location.reload();
-    }
-    return;
-  }
-  p.style.display = "block";
-  promptInput.value = "";
-  if (type === 'task') txt.textContent = "أدخل اسم المهمة:";
-  else if (type === 'channel') txt.textContent = "أدخل اسم القناة:";
-  else if (type === 'editChannel') {
-    txt.textContent = "تغيير اسم القناة:";
-    promptInput.value = currentChannelToEdit;
-  }
-  setTimeout(() => promptInput.focus(), 50);
-}
-
-/* ---------------- Enter Key = Confirm ---------------- */
-promptInput.addEventListener("keypress", e => {
-  if (e.key === "Enter") confirmPrompt();
-});
-
-/* ---------------- Initialize Everything ---------------- */
 render();
-document.addEventListener("DOMContentLoaded", () => {
-  const spawnBtn = document.querySelector(".add-btn");
-  spawnBtn.addEventListener("click", spawnFloatingTask);
-});
 </script>
 </body>
 </html>
