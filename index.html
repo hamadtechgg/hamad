@@ -175,15 +175,6 @@ footer{
     color: #ff0000 !important;
     font-weight: bold;
   }
-  
-  .channel li {
-    cursor: default;
-  }
-  
-  .task-buttons {
-    z-index: 10;
-    position: relative;
-  }
 }
 </style>
 </head>
@@ -247,13 +238,8 @@ function render(){
     const ul = document.getElementById(ulId);
     stored.channels[ch].forEach(task=>{
       const li = document.createElement("li");
-      
-      // Only enable drag on desktop
-      if (!isMobile) {
-        li.draggable = true;
-        li.ondragstart = (ev)=>onDrag(ev, ch, task.text);
-      }
-      
+      li.draggable = true;
+      li.ondragstart = (ev)=>onDrag(ev, ch, task.text);
       li.innerHTML = `
         <span class="task-text">${task.text}</span>
         <div class="task-buttons">
@@ -336,7 +322,7 @@ function editTaskPrompt(channel,text){
   saveData();render();
 }
 
-/* ---------------- Drag & Drop (Desktop Only) ---------------- */
+/* ---------------- Drag & Drop (Desktop) ---------------- */
 function onDrag(ev,from,text){
   ev.dataTransfer.setData("text/plain",JSON.stringify({from,text}));
 }
@@ -363,34 +349,34 @@ document.addEventListener("click",e=>{
 
 /* ---------------- Touch Drag & Drop (Mobile Only) ---------------- */
 (function enableTouchDrag(){
-  if(!isMobile) return;
+  const isMobileDevice=/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if(!isMobileDevice)return;
 
   let dragTask=null,dragEl=null;
   let isDragging = false;
   let touchStartTime = 0;
   let touchStartX = 0;
   let touchStartY = 0;
+  let dragTimeout = null;
 
   document.addEventListener("touchstart",e=>{
-    const li=e.target.closest("li"); 
-    if(!li) return;
+    const li=e.target.closest("li"); if(!li)return;
     
     // Check if the touch is on a button
     if (e.target.closest('.task-buttons')) {
       return; // Don't start drag if touching buttons
     }
     
-    const ul=li.closest("ul"); 
-    if(!ul) return;
+    const ul=li.closest("ul"); if(!ul)return;
     const channel=Object.keys(stored.channels).find(k=>`ul-${htmlSafeId(k)}`===ul.id);
-    if(!channel) return;
+    if(!channel)return;
     
     touchStartTime = Date.now();
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
     
     // Set a timeout to start dragging after a delay
-    dragTask = setTimeout(() => {
+    dragTimeout = setTimeout(() => {
       const text=li.querySelector(".task-text").textContent;
       dragTask={text,from:channel};
       dragEl=li.cloneNode(true);
@@ -428,12 +414,12 @@ document.addEventListener("click",e=>{
 
   document.addEventListener("touchend",e=>{
     // Clear the drag timeout if it hasn't fired yet
-    if (dragTask && typeof dragTask === 'number') {
-      clearTimeout(dragTask);
+    if (dragTimeout) {
+      clearTimeout(dragTimeout);
+      dragTimeout = null;
     }
     
-    if(!isDragging || !dragEl || !dragTask || typeof dragTask === 'number') {
-      dragTask = null;
+    if(!isDragging || !dragEl || !dragTask) {
       isDragging = false;
       return;
     }
