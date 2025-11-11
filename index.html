@@ -94,14 +94,17 @@ li:hover{transform:translateY(-3px) scale(1.01);background:rgba(255,255,255,0.09
 </div>
 
 <div id="floatingTask" draggable="true"><span id="floatingTaskText"></span></div>
+
+<!-- Custom prompt -->
 <div id="customPrompt">
   <div id="promptText"></div>
   <input type="text" id="customPromptInput"/>
-  <div>
+  <div id="promptButtons">
     <button class="accept-btn" onclick="confirmPrompt()">موافق</button>
     <button class="cancel-btn" onclick="cancelPrompt()">إلغاء</button>
   </div>
 </div>
+
 <div id="errorPrompt"><p id="errorMsg"></p><button onclick="this.parentElement.style.display='none'">موافق</button></div>
 
 <script>
@@ -117,6 +120,7 @@ function saveData(){localStorage.setItem("tasksDataV2",JSON.stringify(stored));}
 function escapeHtml(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function escapeJs(s){return String(s??"").replace(/\\/g,"\\\\").replace(/'/g,"\\'");}
 function htmlSafeId(s){return'c_'+String(s).replace(/[^\w\-]/g,'_');}
+
 function render(){
   container.innerHTML="";
   stored.order.forEach(channel=>{
@@ -193,6 +197,7 @@ function render(){
     });
   });
 }
+
 function toggleCheck(ch,task,e){
   e.stopPropagation();
   const t=stored.channels[ch].find(x=>x.text===task);
@@ -201,43 +206,60 @@ function toggleCheck(ch,task,e){
 }
 function deleteTask(ch,task){stored.channels[ch]=stored.channels[ch].filter(x=>x.text!==task);saveData();render();}
 function deleteChannel(n){delete stored.channels[n];stored.order=stored.order.filter(c=>c!==n);saveData();render();}
+
 function openPrompt(type){
   promptType=type;
   const p=document.getElementById("customPrompt");
-  document.getElementById("promptText").textContent=(type==='task'?"أدخل اسم المهمة:":
-    type==='channel'?"أدخل اسم القناة:":
-    type==='reset'?"هل أنت متأكد؟":"تعديل القناة:");
-  promptInput.value="";p.style.display="block";setTimeout(()=>promptInput.focus(),50);
+  const promptText=document.getElementById("promptText");
+  const input=promptInput;
+  const buttons=document.getElementById("promptButtons");
+
+  // Reset default state
+  input.style.display="block";
+  buttons.innerHTML=`<button class="accept-btn" onclick="confirmPrompt()">موافق</button>
+                     <button class="cancel-btn" onclick="cancelPrompt()">إلغاء</button>`;
+
+  if(type==='task'){promptText.textContent="أدخل اسم المهمة:";}
+  else if(type==='channel'){promptText.textContent="أدخل اسم القناة:";}
+  else if(type==='reset'){
+    promptText.textContent="هل أنت متأكد أنك تريد إعادة ضبط الكل؟";
+    input.style.display="none";
+    buttons.innerHTML=`<button class="accept-btn" onclick="confirmPrompt('yes')">نعم</button>
+                       <button class="cancel-btn" onclick="cancelPrompt()">لا</button>`;
+  }
+
+  input.value="";
+  p.style.display="block";
+  if(type!=='reset')setTimeout(()=>input.focus(),50);
 }
+
 function cancelPrompt(){document.getElementById("customPrompt").style.display="none";}
-function confirmPrompt(){
+
+function confirmPrompt(answer){
   const v=promptInput.value.trim();
   if(promptType==="task"){
     if(!v)return;
-    floatingTaskText.textContent=v;floatingTask.style.display="block";
-    draggedTaskData={text:v,fromChannel:null,isNew:true};
-    if(isTouchDevice){
-      floatingTask.addEventListener("touchmove",e=>{
-        const t=e.touches[0];
-        floatingTask.style.left=t.clientX+"px";floatingTask.style.top=t.clientY+"px";
-      });
-      floatingTask.addEventListener("touchend",e=>{
-        const t=e.changedTouches[0];
-        const el=document.elementFromPoint(t.clientX,t.clientY);
-        const dropEl=el?el.closest(".channel"):null;
-        if(dropEl){
-          const name=dropEl.querySelector(".channel-name").textContent;
-          stored.channels[name].push({text:v,checked:false});
-          saveData();render();
-        }
-        floatingTask.style.display="none";draggedTaskData=null;
-      });
-    }
+    // Spawn task directly to first channel
+    const firstChannel=stored.order[0];
+    stored.channels[firstChannel].push({text:v,checked:false});
+    saveData();render();
   }else if(promptType==="channel"){
-    if(!v)return;stored.order.push(v);stored.channels[v]=[];saveData();render();
-  }else if(promptType==="reset"){localStorage.removeItem("tasksDataV2");location.reload();}
+    if(!v)return;
+    stored.order.push(v);
+    stored.channels[v]=[];
+    saveData();render();
+  }else if(promptType==="reset" && answer==="yes"){
+    localStorage.removeItem("tasksDataV2");
+    location.reload();
+  }
   cancelPrompt();
 }
+
+// ENTER key confirms for typing prompts
+promptInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){confirmPrompt();}
+});
+
 render();
 </script>
 </body>
