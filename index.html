@@ -19,6 +19,9 @@ html,body{
   background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
   background-size:400% 400%;animation:purpleGradient 20s ease infinite;
   color:var(--text);
+  -webkit-user-select:none;
+  user-select:none;
+  touch-action:manipulation;
 }
 @keyframes purpleGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 .top-bar{
@@ -71,7 +74,7 @@ li:hover{transform:translateY(-3px) scale(1.01);background:rgba(255,255,255,0.09
 .task-check.checked::after{content:"✔";position:absolute;color:#fff;font-size:12px;left:3px;top:-3px;}
 .delete-task{color:var(--danger);font-weight:800;font-size:1.2rem;cursor:pointer;}
 #floatingTask{position:fixed;top:90px;right:20px;z-index:1200;background:rgba(255,255,255,0.06);padding:10px 14px;
-  border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.5);cursor:grab;display:none;}
+  border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.5);cursor:grab;display:none;pointer-events:none;}
 #customPrompt,#errorPrompt{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
   background:var(--prompt-bg);backdrop-filter:blur(8px);padding:22px;border-radius:12px;z-index:2000;display:none;width:360px;text-align:center;}
 #customPrompt input{width:100%;padding:10px;border-radius:8px;border:none;margin:12px 0;}
@@ -93,7 +96,7 @@ li:hover{transform:translateY(-3px) scale(1.01);background:rgba(255,255,255,0.09
   <div class="channels-row" id="channelsContainer"></div>
 </div>
 
-<div id="floatingTask"><span id="floatingTaskText"></span></div>
+<div id="floatingTask" draggable="true"><span id="floatingTaskText"></span></div>
 
 <div id="customPrompt">
   <div id="promptText"></div>
@@ -112,7 +115,7 @@ const container=document.getElementById("channelsContainer");
 const floatingTask=document.getElementById("floatingTask");
 const floatingTaskText=document.getElementById("floatingTaskText");
 const promptInput=document.getElementById("customPromptInput");
-let draggedTaskData=null,promptType="",touchStartX=0,touchStartY=0,dragging=false;
+let draggedTaskData=null,promptType="";
 const isTouchDevice=('ontouchstart'in window)||(navigator.maxTouchPoints>0);
 
 function saveData(){localStorage.setItem("tasksDataV2",JSON.stringify(stored));}
@@ -132,64 +135,70 @@ function render(){
       <div class="channel-header">
         <div class="channel-title">
           <span class="channel-name">${escapeHtml(channel)}</span>
+          <span class="edit-icon" onclick="editChannel('${escapeJs(channel)}')">✎</span>
         </div>
         <span class="delete-icon" onclick="deleteChannel('${escapeJs(channel)}')">✖</span>
       </div>
       <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
       <ul id="ul-${htmlSafeId(channel)}"></ul>`;
     container.appendChild(chDiv);
-
     const ul=document.getElementById(`ul-${htmlSafeId(channel)}`);
+
     tasks.forEach(task=>{
       const li=document.createElement("li");
       li.draggable=!isTouchDevice;
       li.innerHTML=`
         <div class="task-content">
-          <div class="task-check ${task.checked?'checked':''}" 
-               onclick="toggleCheck('${escapeJs(channel)}','${escapeJs(task.text)}',event)"></div>
+          <div class="task-check ${task.checked?'checked':''}" onclick="toggleCheck('${escapeJs(channel)}','${escapeJs(task.text)}',event)"></div>
           <span class="task-text">${escapeHtml(task.text)}</span>
         </div>
         <span class="delete-task" onclick="deleteTask('${escapeJs(channel)}','${escapeJs(task.text)}')">✖</span>`;
       
-      li.addEventListener("dragstart",()=>{draggedTaskData={text:task.text,fromChannel:channel};});
-      
+      // Desktop drag
+      li.addEventListener("dragstart",()=>{draggedTaskData={text:task.text,fromChannel:channel,isNew:false};});
+
+      // Touch drag fix
       if(isTouchDevice){
-        // ✅ Prevent accidental drag when tapping the check button
+        let dragging=false, startX=0, startY=0;
         li.addEventListener("touchstart",e=>{
-          if(e.target.closest('.task-check')){dragging=false;return;}
+          if(e.target.closest('.task-check'))return;
           const t=e.touches[0];
-          touchStartX=t.clientX;touchStartY=t.clientY;dragging=true;
-          draggedTaskData={text:task.text,fromChannel:channel};
-          floatingTask.style.display="block";
-          floatingTaskText.textContent=task.text;
-          floatingTask.style.left=t.clientX+"px";
-          floatingTask.style.top=t.clientY+"px";
-        });
+          startX=t.clientX; startY=t.clientY;
+          dragging=false;
+        },{passive:true});
 
         li.addEventListener("touchmove",e=>{
-          if(!dragging)return;
           const t=e.touches[0];
-          floatingTask.style.left=t.clientX+"px";
-          floatingTask.style.top=t.clientY+"px";
-        });
+          const dx=Math.abs(t.clientX-startX), dy=Math.abs(t.clientY-startY);
+          if(dx>5||dy>5){ // start drag after small move
+            e.preventDefault();
+            if(!dragging){
+              draggedTaskData={text:task.text,fromChannel:channel,isNew:false};
+              floatingTask.style.display="block";
+              floatingTaskText.textContent=task.text;
+              dragging=true;
+            }
+            floatingTask.style.left=t.clientX+"px";
+            floatingTask.style.top=t.clientY+"px";
+          }
+        },{passive:false});
 
         li.addEventListener("touchend",e=>{
           if(!dragging)return;
-          dragging=false;
-          floatingTask.style.display="none";
           const t=e.changedTouches[0];
           const el=document.elementFromPoint(t.clientX,t.clientY);
           const dropEl=el?el.closest(".channel"):null;
           if(dropEl){
-            const target=dropEl.querySelector(".channel-name").textContent;
+            const name=dropEl.querySelector(".channel-name").textContent;
             stored.channels[draggedTaskData.fromChannel]=stored.channels[draggedTaskData.fromChannel].filter(x=>x.text!==draggedTaskData.text);
-            stored.channels[target].push({text:draggedTaskData.text,checked:false});
+            stored.channels[name].push({text:draggedTaskData.text,checked:false});
             saveData();render();
           }
+          floatingTask.style.display="none";
           draggedTaskData=null;
+          dragging=false;
         });
       }
-
       ul.appendChild(li);
     });
 
@@ -197,12 +206,13 @@ function render(){
     chDiv.addEventListener("drop",e=>{
       e.preventDefault();
       if(!draggedTaskData)return;
-      const{name,text,fromChannel}=draggedTaskData;
-      stored.channels[fromChannel]=stored.channels[fromChannel].filter(t=>t.text!==text);
-      stored.channels[channel].push({text,checked:false});
-      saveData();render();
-      draggedTaskData=null;
-      floatingTask.style.display="none";
+      const{text,fromChannel,isNew}=draggedTaskData;
+      if(isNew)stored.channels[channel].push({text,checked:false});
+      else{
+        stored.channels[fromChannel]=stored.channels[fromChannel].filter(t=>t.text!==text);
+        stored.channels[channel].push({text,checked:false});
+      }
+      saveData();render();draggedTaskData=null;floatingTask.style.display="none";
     });
   });
 }
@@ -215,49 +225,52 @@ function toggleCheck(ch,task,e){
 }
 function deleteTask(ch,task){stored.channels[ch]=stored.channels[ch].filter(x=>x.text!==task);saveData();render();}
 function deleteChannel(n){delete stored.channels[n];stored.order=stored.order.filter(c=>c!==n);saveData();render();}
+function editChannel(oldName){openPrompt('renameChannel',oldName);}
 
-function openPrompt(type){
+function openPrompt(type,extra){
   promptType=type;
   const p=document.getElementById("customPrompt");
-  const txt=document.getElementById("promptText");
+  const promptText=document.getElementById("promptText");
   const input=promptInput;
-  const btns=document.getElementById("promptButtons");
+  const buttons=document.getElementById("promptButtons");
+
   input.style.display="block";
-  btns.innerHTML=`<button class="accept-btn" onclick="confirmPrompt()">موافق</button>
-                  <button class="cancel-btn" onclick="cancelPrompt()">إلغاء</button>`;
-  if(type==='task')txt.textContent="أدخل اسم المهمة:";
-  else if(type==='channel')txt.textContent="أدخل اسم القناة:";
+  buttons.innerHTML=`<button class="accept-btn" onclick="confirmPrompt()">موافق</button>
+                     <button class="cancel-btn" onclick="cancelPrompt()">إلغاء</button>`;
+  if(type==='task'){promptText.textContent="أدخل اسم المهمة:";}
+  else if(type==='channel'){promptText.textContent="أدخل اسم القناة:";}
+  else if(type==='renameChannel'){promptText.textContent="أدخل الاسم الجديد للقناة:";input.dataset.old=extra;}
   else if(type==='reset'){
-    txt.textContent="هل أنت متأكد أنك تريد إعادة ضبط الكل؟";
+    promptText.textContent="هل أنت متأكد أنك تريد إعادة ضبط الكل؟";
     input.style.display="none";
-    btns.innerHTML=`<button class="accept-btn" onclick="confirmPrompt('yes')">نعم</button>
-                    <button class="cancel-btn" onclick="cancelPrompt()">لا</button>`;
+    buttons.innerHTML=`<button class="accept-btn" onclick="confirmPrompt('yes')">نعم</button>
+                       <button class="cancel-btn" onclick="cancelPrompt()">لا</button>`;
   }
   input.value="";
   p.style.display="block";
   if(type!=='reset')setTimeout(()=>input.focus(),50);
 }
-
 function cancelPrompt(){document.getElementById("customPrompt").style.display="none";}
-function confirmPrompt(ans){
+
+function confirmPrompt(answer){
   const v=promptInput.value.trim();
   if(promptType==="task"){
     if(!v)return;
-    const first=stored.order[0];
-    stored.channels[first].push({text:v,checked:false});
-    saveData();render();
+    const firstChannel=stored.order[0];
+    stored.channels[firstChannel].push({text:v,checked:false});
   }else if(promptType==="channel"){
     if(!v)return;
-    stored.order.push(v);
-    stored.channels[v]=[];
-    saveData();render();
-  }else if(promptType==="reset"&&ans==="yes"){
-    localStorage.removeItem("tasksDataV2");
-    location.reload();
+    stored.order.push(v);stored.channels[v]=[];
+  }else if(promptType==="renameChannel"){
+    const old=promptInput.dataset.old;if(!v||!old)return;
+    stored.channels[v]=stored.channels[old];delete stored.channels[old];
+    stored.order=stored.order.map(x=>x===old?v:x);
+  }else if(promptType==="reset"&&answer==="yes"){
+    localStorage.removeItem("tasksDataV2");location.reload();
   }
-  cancelPrompt();
+  saveData();render();cancelPrompt();
 }
-promptInput.addEventListener("keydown",e=>{if(e.key==="Enter")confirmPrompt();});
+promptInput.addEventListener("keydown",e=>{if(e.key==="Enter"){confirmPrompt();}});
 render();
 </script>
 </body>
